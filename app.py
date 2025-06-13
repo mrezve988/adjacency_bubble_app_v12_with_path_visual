@@ -286,43 +286,48 @@ import math
 
 st.markdown("### 🧊 Sketch Your Plan")
 
-with st.expander("🎨 Drawing Tools"):
-    drawing_mode = st.radio("Select Drawing Tool", ["rect", "circle", "freedraw"], horizontal=True)
-    stroke_width = st.slider("Stroke width", 1, 5, 2)
-    room_name = st.text_input("Room Name", value="Room")
-    zoning = st.selectbox("Room Zoning", ["Public", "Private", "Service"])
+# Use columns to compress the control layout
+col1, col2 = st.columns([1, 3])
+
+with col1:
+    st.markdown("#### 🎨 Drawing Controls")
+    drawing_mode = st.radio("Tool", ["rect", "circle", "freedraw"], label_visibility="collapsed")
+    stroke_width = st.slider("Stroke", 1, 5, 2)
+    room_name = st.text_input("Name", value="Room")
+    zoning = st.selectbox("Zoning", ["Public", "Private", "Service"], index=2)
     room_color = {"Public": "green", "Private": "blue", "Service": "orange"}[zoning]
 
-canvas_result = st_canvas(
-    fill_color=room_color + "88",
-    stroke_width=stroke_width,
-    stroke_color=room_color,
-    background_color="#FFFFFF",
-    height=500,
-    width=800,
-    drawing_mode=drawing_mode,
-    key="sketch-canvas"
-)
+with col2:
+    canvas_result = st_canvas(
+        fill_color=room_color + "88",
+        stroke_width=stroke_width,
+        stroke_color=room_color,
+        background_color="#FFFFFF",
+        height=600,
+        width=1000,
+        drawing_mode=drawing_mode,
+        key="sketch-canvas-compact"
+    )
 
+st.markdown("### 📏 Room Details")
 total_area = 0.0
-if canvas_result.json_data is not None and "objects" in canvas_result.json_data:
-    st.markdown("### 📏 Room Details")
+if canvas_result.json_data and "objects" in canvas_result.json_data:
     for obj in canvas_result.json_data["objects"]:
         shape = obj.get("type")
         if shape == "rect":
             width = obj.get("width", 0)
             height = obj.get("height", 0)
-            area = width * height / 100  # pixels to approx sqft
+            area = width * height / 100
             st.write(f"🟩 {room_name} ({zoning}) - Rectangle Area: {area:.2f} ft²")
             total_area += area
         elif shape == "circle":
             radius = obj.get("radius", 0)
-            area = math.pi * radius**2 / 100
+            area = math.pi * radius ** 2 / 100
             st.write(f"⚪ {room_name} ({zoning}) - Circle Area: {area:.2f} ft²")
             total_area += area
         elif shape == "path":
-            st.write(f"✏️ {room_name} ({zoning}) - Freehand shape (area not calculated)")
+            st.write(f"✏️ {room_name} ({zoning}) - Freehand (area not estimated)")
 
     st.markdown(f"### 📐 Total Plan Area (Rect + Circle only): **{total_area:.2f} ft²**")
 else:
-    st.warning("⚠️ Please draw a shape to see details.")
+    st.info("Draw shapes to see calculated area.")
