@@ -305,7 +305,7 @@ with col1:
     drawing_mode = st.radio("Tool", ["rect", "circle", "freedraw", "text"], label_visibility="collapsed")
     stroke_width = st.slider("Stroke", 1, 5, 2)
     room_name = st.text_input("Name", value="Room")
-    text_input = st.text_input("Text (for labels)", value="Room Name")  # new input for text label
+    text_input = st.text_input("Text (for labels)", value="Room Name")  # Optional user input for text
     zoning = st.selectbox("Zoning", ["Public", "Private", "Service"], index=2)
 
     # ✅ Proper hex color for fill and stroke
@@ -322,15 +322,14 @@ with col1:
 
 with col2:
     canvas_result = st_canvas(
-        fill_color=room_color + "66",  # ← 40% opacity
+        fill_color=room_color + "66",  # 40% opacity fill
         stroke_width=stroke_width,
         stroke_color=room_color,
         background_color="#FFFFFF",
         height=600,
         width=1000,
         drawing_mode=drawing_mode,
-        key="sketch-canvas-final",
-        text=text_input if drawing_mode == "text" else ""
+        key="sketch-canvas-final"
     )
 
 if canvas_result.json_data and "objects" in canvas_result.json_data:
