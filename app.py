@@ -294,6 +294,7 @@ with col_fd2:
 
 # ---------- Interactive Sketch Pad ----------
 from streamlit_drawable_canvas import st_canvas
+import plotly.graph_objects as go
 import math
 
 st.markdown("### 🧊 Sketch Your Plan")
@@ -321,7 +322,7 @@ with col1:
 
 with col2:
     canvas_result = st_canvas(
-        fill_color=room_color + "66",  # 40% opacity fill
+        fill_color=room_color + "66",  # 40% opacity fill for canvas
         stroke_width=stroke_width,
         stroke_color=room_color,
         background_color="#FFFFFF",
@@ -352,8 +353,61 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
         for detail in object_details:
             st.markdown(detail)
         st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} ft²**")
-            
+
+    # ✅ Plotly Room Name Preview
+    shapes = canvas_result.json_data["objects"]
+    fig = go.Figure()
+
+    fillcolor = room_color
+    opacity = 0.4
+
+    for obj in shapes:
+        shape_type = obj.get("type")
+        linecolor = room_color
+        name = room_name
+        x, y = obj.get("left", 0), obj.get("top", 0)
+
+        if shape_type == "rect":
+            w = obj.get("width", 0)
+            h = obj.get("height", 0)
+            fig.add_shape(type="rect",
+                          x0=x, y0=y,
+                          x1=x + w, y1=y + h,
+                          line=dict(color=linecolor),
+                          fillcolor=fillcolor,
+                          opacity=opacity)
+            fig.add_trace(go.Scatter(x=[x + w / 2], y=[y + h / 2],
+                                     text=[name],
+                                     mode="text",
+                                     textposition="middle center",
+                                     textfont=dict(size=14, color="black")))
+
+        elif shape_type == "circle":
+            r = obj.get("radius", 0)
+            fig.add_shape(type="circle",
+                          x0=x - r, y0=y - r,
+                          x1=x + r, y1=y + r,
+                          line=dict(color=linecolor),
+                          fillcolor=fillcolor,
+                          opacity=opacity)
+            fig.add_trace(go.Scatter(x=[x], y=[y],
+                                     text=[name],
+                                     mode="text",
+                                     textposition="middle center",
+                                     textfont=dict(size=14, color="black")))
+
+    fig.update_layout(
+        title="🧾 Room Preview with Names",
+        showlegend=False,
+        height=500,
+        margin=dict(l=20, r=20, t=30, b=20),
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        plot_bgcolor="white"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
 else:
     with col1:
         st.info("Draw shapes to display room details.")
-
