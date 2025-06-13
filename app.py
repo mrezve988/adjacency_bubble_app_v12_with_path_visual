@@ -182,11 +182,15 @@ for room in room_list:
     if deviation > 20:
         improvements.append(f"Adjust **{room}** size (deviation is {deviation:.1f}%).")
 
-if improvements:
-    for item in improvements:
-        st.markdown(f"- {item}")
-else:
-    st.success("✅ Your layout is well-matched!")
+_, col_sugg, _ = st.columns([1, 1.5, 1.5])
+with col_sugg:
+    st.markdown("#### 💡 Suggestions")
+    if improvements:
+        for item in improvements:
+            st.markdown(f"- {item}")
+    else:
+        st.success("✅ Your layout is well-matched!")
+
 
 # ---------- Circulation Distance Estimation ----------
 st.markdown("### 📏 Estimated Circulation Distance")
