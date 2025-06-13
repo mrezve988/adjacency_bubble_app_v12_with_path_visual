@@ -302,11 +302,12 @@ col1, col2 = st.columns([1, 3])
 
 with col1:
     st.markdown("#### 🎨 Drawing Controls")
-    drawing_mode = st.radio("Tool", ["rect", "circle", "freedraw"], label_visibility="collapsed")
+    drawing_mode = st.radio("Tool", ["rect", "circle", "freedraw", "text"], label_visibility="collapsed")
     stroke_width = st.slider("Stroke", 1, 5, 2)
     room_name = st.text_input("Name", value="Room")
+    text_input = st.text_input("Text (for labels)", value="Room Name")  # new input for text label
     zoning = st.selectbox("Zoning", ["Public", "Private", "Service"], index=2)
-    
+
     # ✅ Proper hex color for fill and stroke
     privacy_colors = {
         "Public": "#00cc44",
@@ -328,7 +329,8 @@ with col2:
         height=600,
         width=1000,
         drawing_mode=drawing_mode,
-        key="sketch-canvas-final"
+        key="sketch-canvas-final",
+        text=text_input if drawing_mode == "text" else ""
     )
 
 if canvas_result.json_data and "objects" in canvas_result.json_data:
@@ -355,4 +357,3 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
 else:
     with col1:
         st.info("Draw shapes to display room details.")
-
