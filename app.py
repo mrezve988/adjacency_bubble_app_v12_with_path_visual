@@ -306,7 +306,13 @@ with col1:
     stroke_width = st.slider("Stroke", 1, 5, 2)
     room_name = st.text_input("Name", value="Room")
     zoning = st.selectbox("Zoning", ["Public", "Private", "Service"], index=2)
-    room_color = {"Public": "green", "Private": "blue", "Service": "orange"}[zoning]
+   privacy_colors = {
+    "Public": "#00cc44",    # green
+    "Private": "#3399ff",   # blue
+    "Service": "#ff9900"    # orange
+}
+room_color = privacy_colors[zoning]
+
 
     st.markdown("#### 📏 Room Details")
     total_area = 0.0
