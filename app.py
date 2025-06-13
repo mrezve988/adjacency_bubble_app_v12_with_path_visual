@@ -306,7 +306,14 @@ with col1:
     stroke_width = st.slider("Stroke", 1, 5, 2)
     room_name = st.text_input("Name", value="Room")
     zoning = st.selectbox("Zoning", ["Public", "Private", "Service"], index=2)
-   room_color = {"Public": "green", "Private": "blue", "Service": "orange"}[zoning]
+    
+    # ✅ Proper hex color for fill and stroke
+    privacy_colors = {
+        "Public": "#00cc44",
+        "Private": "#3399ff",
+        "Service": "#ff9900"
+    }
+    room_color = privacy_colors[zoning]
 
     st.markdown("#### 📏 Room Details")
     total_area = 0.0
@@ -314,7 +321,7 @@ with col1:
 
 with col2:
     canvas_result = st_canvas(
-        fill_color=room_color + "66",  # 40% opacity
+        fill_color=room_color + "66",  # ← 40% opacity
         stroke_width=stroke_width,
         stroke_color=room_color,
         background_color="#FFFFFF",
