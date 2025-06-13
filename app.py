@@ -308,7 +308,7 @@ with col1:
     room_name = st.text_input("Name", value="Room")
     zoning = st.selectbox("Zoning", ["Public", "Private", "Service"], index=2)
 
-    # ✅ Proper hex color for fill and stroke
+    # ✅ Color dictionary
     privacy_colors = {
         "Public": "#00cc44",
         "Private": "#3399ff",
@@ -322,7 +322,7 @@ with col1:
 
 with col2:
     canvas_result = st_canvas(
-        fill_color=room_color + "66",  # 40% opacity fill for canvas
+        fill_color=room_color + "66",
         stroke_width=stroke_width,
         stroke_color=room_color,
         background_color="#FFFFFF",
@@ -332,28 +332,55 @@ with col2:
         key="sketch-canvas-final"
     )
 
+# ✅ Store per-shape metadata (room name + zoning)
 if canvas_result.json_data and "objects" in canvas_result.json_data:
-    for obj in canvas_result.json_data["objects"]:
+    current_shapes = canvas_result.json_data["objects"]
+
+    if "shape_meta" not in st.session_state:
+        st.session_state.shape_meta = []
+
+    current_count = len(current_shapes)
+    previous_count = len(st.session_state.shape_meta)
+
+    # If new shape added
+    if current_count > previous_count:
+        st.session_state.shape_meta.append({
+            "name": room_name,
+            "zoning": zoning
+        })
+
+    # If shapes removed (e.g., undo)
+    elif current_count < previous_count:
+        st.session_state.shape_meta = st.session_state.shape_meta[:current_count]
+
+    # 🔁 Now loop through shapes and display with correct info
+    for i, obj in enumerate(current_shapes):
         shape = obj.get("type")
+        meta = st.session_state.shape_meta[i]
+        name = meta["name"]
+        zoning_type = meta["zoning"]
+        color_icon = {"Public": "🟩", "Private": "🔵", "Service": "🟧"}.get(zoning_type, "⬜")
+
         if shape == "rect":
             width = obj.get("width", 0)
             height = obj.get("height", 0)
             area = width * height / 100
-            object_details.append(f"🟩 {room_name} ({zoning}) - Rect Area: {area:.2f} ft²")
+            object_details.append(f"{color_icon} {name} ({zoning_type}) - Rect Area: {area:.2f} ft²")
             total_area += area
+
         elif shape == "circle":
             radius = obj.get("radius", 0)
             area = math.pi * radius ** 2 / 100
-            object_details.append(f"⚪ {room_name} ({zoning}) - Circle Area: {area:.2f} ft²")
+            object_details.append(f"{color_icon} {name} ({zoning_type}) - Circle Area: {area:.2f} ft²")
             total_area += area
+
         elif shape == "path":
-            object_details.append(f"✏️ {room_name} ({zoning}) - Freehand (area not calculated)")
+            object_details.append(f"{color_icon} {name} ({zoning_type}) - Freehand (area not calculated)")
 
     with col1:
         for detail in object_details:
             st.markdown(detail)
         st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} ft²**")
-
 
 else:
     with col1:
