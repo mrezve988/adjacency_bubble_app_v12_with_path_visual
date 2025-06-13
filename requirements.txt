@@ -4,5 +4,5 @@ pyvis
 plotly
 networkx
 scikit-learn
-
+kaleido
 streamlit-drawable-canvas
