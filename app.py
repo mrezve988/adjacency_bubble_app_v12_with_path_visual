@@ -294,6 +294,7 @@ with col_fd2:
 
 # ---------- Interactive Sketch Pad ----------
 from streamlit_drawable_canvas import st_canvas
+import plotly.graph_objects as go
 import math
 
 st.markdown("### 🧊 Sketch Your Plan")
@@ -306,12 +307,12 @@ with col1:
     stroke_width = st.slider("Stroke", 1, 5, 2)
     room_name = st.text_input("Name", value="Room")
     zoning = st.selectbox("Zoning", ["Public", "Private", "Service"], index=2)
-    
-    # ✅ Proper hex color for fill and stroke
+
+    # ✅ Use proper hex codes for color + alpha
     privacy_colors = {
-        "Public": "#00cc44",
-        "Private": "#3399ff",
-        "Service": "#ff9900"
+        "Public": "#00cc44",    # green
+        "Private": "#3399ff",   # blue
+        "Service": "#ff9900"    # orange
     }
     room_color = privacy_colors[zoning]
 
@@ -321,9 +322,9 @@ with col1:
 
 with col2:
     canvas_result = st_canvas(
-        fill_color=room_color + "66",  # ← 40% opacity
-        stroke_width=stroke_width,
+        fill_color=room_color + "66",  # 40% opacity
         stroke_color=room_color,
+        stroke_width=stroke_width,
         background_color="#FFFFFF",
         height=600,
         width=1000,
@@ -352,14 +353,8 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
         for detail in object_details:
             st.markdown(detail)
         st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} ft²**")
-            with col1:
-        for detail in object_details:
-            st.markdown(detail)
-        st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} ft²**")
 
-    # 🔻 ADD THIS BLOCK HERE (START) -----------------
-    import plotly.graph_objects as go
-
+    # ✅ Plotly visualization with centered room names
     shapes = canvas_result.json_data["objects"]
     fig = go.Figure()
     for obj in shapes:
@@ -404,9 +399,8 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
         yaxis=dict(visible=False),
         plot_bgcolor="white"
     )
-
     st.plotly_chart(fig, use_container_width=True)
-    # 🔺 ADD THIS BLOCK HERE (END) -----------------
+
 else:
     with col1:
         st.info("Draw shapes to display room details.")
