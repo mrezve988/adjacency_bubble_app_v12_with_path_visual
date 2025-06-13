@@ -314,7 +314,7 @@ with col1:
 
 with col2:
     canvas_result = st_canvas(
-        fill_color=room_color + "88",
+        fill_color=room_color + "66",  # 40% opacity
         stroke_width=stroke_width,
         stroke_color=room_color,
         background_color="#FFFFFF",
