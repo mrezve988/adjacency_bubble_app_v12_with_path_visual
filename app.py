@@ -152,10 +152,14 @@ privacy_mismatches = sum([
 privacy_score = 1 - (privacy_mismatches / len(room_list))
 final_score = round((0.4 * jaccard_score + 0.4 * size_score + 0.2 * privacy_score) * 100, 2)
 
-st.metric("📊 Adjacency Match", f"{jaccard_score*100:.1f}%")
-st.metric("📐 Size Accuracy", f"{size_score*100:.1f}%")
-st.metric("🔒 Privacy Match", f"{privacy_score*100:.1f}%")
-st.metric("✅ Final Score", f"{final_score}%")
+col_score, _, _ = st.columns([1, 1.5, 1.5])
+with col_score:
+    st.markdown("#### 📊 Scores")
+    st.metric("Adjacency Match", f"{jaccard_score*100:.1f}%")
+    st.metric("Size Accuracy", f"{size_score*100:.1f}%")
+    st.metric("Privacy Match", f"{privacy_score*100:.1f}%")
+    st.metric("Final Score", f"{final_score}%")
+
 
 # ---------- Suggestions ----------
 st.markdown("### 💡 Suggestions")
