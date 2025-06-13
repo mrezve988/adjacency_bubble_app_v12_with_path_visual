@@ -130,7 +130,6 @@ with c4:
     draw_interactive(user_df, user_adjacencies)
 
 # ---------- Scoring ----------
-st.markdown("### 🧮 Scoring System")
 std_set = set(tuple(sorted(p)) for p in standard_adjacencies)
 usr_set = set(tuple(sorted(p)) for p in user_adjacencies)
 intersection = std_set & usr_set
@@ -154,7 +153,6 @@ final_score = round((0.4 * jaccard_score + 0.4 * size_score + 0.2 * privacy_scor
 
 
 # ---------- Suggestions ----------
-st.markdown("### 💡 Suggestions")
 improvements = []
 
 missing = std_set - usr_set
@@ -176,7 +174,6 @@ for room in room_list:
 
 
 # ---------- Circulation Distance Estimation ----------
-st.markdown("### 📏 Estimated Circulation Distance")
 
 import numpy as np
 from sklearn.linear_model import LinearRegression
