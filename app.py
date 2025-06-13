@@ -379,59 +379,6 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
             st.markdown(detail)
         st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} ft²**")
 
-    # ✅ Plotly Preview with Room Names
-    fig = go.Figure()
-    fill_opacity = 0.4
-
-    for i, obj in enumerate(current_shapes):
-        shape = obj.get("type")
-        meta = st.session_state.shape_meta[i]
-        name = meta["name"]
-        zoning_type = meta["zoning"]
-        color = privacy_colors[zoning_type]
-
-        x, y = obj.get("left", 0), obj.get("top", 0)
-
-        if shape == "rect":
-            w = obj.get("width", 0)
-            h = obj.get("height", 0)
-            fig.add_shape(type="rect",
-                          x0=x, y0=y,
-                          x1=x + w, y1=y + h,
-                          line=dict(color=color),
-                          fillcolor=color,
-                          opacity=fill_opacity)
-            fig.add_trace(go.Scatter(x=[x + w / 2], y=[y + h / 2],
-                                     text=[name],
-                                     mode="text",
-                                     textposition="middle center",
-                                     textfont=dict(size=14, color="black")))
-
-        elif shape == "circle":
-            r = obj.get("radius", 0)
-            fig.add_shape(type="circle",
-                          x0=x - r, y0=y - r,
-                          x1=x + r, y1=y + r,
-                          line=dict(color=color),
-                          fillcolor=color,
-                          opacity=fill_opacity)
-            fig.add_trace(go.Scatter(x=[x], y=[y],
-                                     text=[name],
-                                     mode="text",
-                                     textposition="middle center",
-                                     textfont=dict(size=14, color="black")))
-
-    fig.update_layout(
-        title="🧾 Room Layout Preview with Labels",
-        showlegend=False,
-        height=500,
-        margin=dict(l=20, r=20, t=30, b=20),
-        xaxis=dict(visible=False),
-        yaxis=dict(visible=False),
-        plot_bgcolor="white"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
 
 else:
     with col1:
