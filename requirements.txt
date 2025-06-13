@@ -1,0 +1,8 @@
+streamlit
+pandas
+pyvis
+plotly
+networkx
+scikit-learn
+
+streamlit-drawable-canvas
