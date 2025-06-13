@@ -152,14 +152,6 @@ privacy_mismatches = sum([
 privacy_score = 1 - (privacy_mismatches / len(room_list))
 final_score = round((0.4 * jaccard_score + 0.4 * size_score + 0.2 * privacy_score) * 100, 2)
 
-col_score, _, _ = st.columns([1, 1.5, 1.5])
-with col_score:
-    st.markdown("#### 📊 Scores")
-    st.metric("Adjacency Match", f"{jaccard_score*100:.1f}%")
-    st.metric("Size Accuracy", f"{size_score*100:.1f}%")
-    st.metric("Privacy Match", f"{privacy_score*100:.1f}%")
-    st.metric("Final Score", f"{final_score}%")
-
 
 # ---------- Suggestions ----------
 st.markdown("### 💡 Suggestions")
@@ -181,15 +173,6 @@ for room in room_list:
     deviation = abs(std_area - usr_area) / std_area * 100
     if deviation > 20:
         improvements.append(f"Adjust **{room}** size (deviation is {deviation:.1f}%).")
-
-_, col_sugg, _ = st.columns([1, 1.5, 1.5])
-with col_sugg:
-    st.markdown("#### 💡 Suggestions")
-    if improvements:
-        for item in improvements:
-            st.markdown(f"- {item}")
-    else:
-        st.success("✅ Your layout is well-matched!")
 
 
 # ---------- Circulation Distance Estimation ----------
@@ -220,8 +203,29 @@ def estimate_circulation(df, edges):
 std_circ = estimate_circulation(standard_df, standard_adjacencies)
 usr_circ = estimate_circulation(user_df, user_adjacencies)
 
-_, _, col_circ = st.columns([1, 1.5, 1.5])
-with col_circ:
+st.markdown("### 🔎 Layout Evaluation Summary")
+
+col1, col2, col3 = st.columns([1, 1.5, 1.5])
+
+# --- Column 1: Scores ---
+with col1:
+    st.markdown("#### 📊 Scores")
+    st.metric("Adjacency Match", f"{jaccard_score*100:.1f}%")
+    st.metric("Size Accuracy", f"{size_score*100:.1f}%")
+    st.metric("Privacy Match", f"{privacy_score*100:.1f}%")
+    st.metric("Final Score", f"{final_score}%")
+
+# --- Column 2: Suggestions ---
+with col2:
+    st.markdown("#### 💡 Suggestions")
+    if improvements:
+        for item in improvements:
+            st.markdown(f"- {item}")
+    else:
+        st.success("✅ Your layout is well-matched!")
+
+# --- Column 3: Circulation ---
+with col3:
     st.markdown("#### 📏 Circulation")
     st.metric("Standard", f"{std_circ} ft")
     st.metric("User", f"{usr_circ} ft")
@@ -229,7 +233,6 @@ with col_circ:
         st.warning("⚠️ Reduce user circulation.")
     else:
         st.success("✅ Circulation optimized.")
-
 
 # ---------- Circulation Path Visualization ----------
 st.markdown("### 🗺 Circulation Path Visualization")
