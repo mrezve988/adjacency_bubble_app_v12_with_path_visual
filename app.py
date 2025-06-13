@@ -308,7 +308,7 @@ with col1:
     room_name = st.text_input("Name", value="Room")
     zoning = st.selectbox("Zoning", ["Public", "Private", "Service"], index=2)
 
-    # ✅ Color dictionary
+    # ✅ Proper hex color for fill and stroke
     privacy_colors = {
         "Public": "#00cc44",
         "Private": "#3399ff",
@@ -322,7 +322,7 @@ with col1:
 
 with col2:
     canvas_result = st_canvas(
-        fill_color=room_color + "66",
+        fill_color=room_color + "66",  # 40% opacity fill
         stroke_width=stroke_width,
         stroke_color=room_color,
         background_color="#FFFFFF",
@@ -332,7 +332,7 @@ with col2:
         key="sketch-canvas-final"
     )
 
-# ✅ Store per-shape metadata (room name + zoning)
+# ✅ Session-based per-shape metadata tracking
 if canvas_result.json_data and "objects" in canvas_result.json_data:
     current_shapes = canvas_result.json_data["objects"]
 
@@ -342,18 +342,15 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
     current_count = len(current_shapes)
     previous_count = len(st.session_state.shape_meta)
 
-    # If new shape added
     if current_count > previous_count:
         st.session_state.shape_meta.append({
             "name": room_name,
             "zoning": zoning
         })
-
-    # If shapes removed (e.g., undo)
     elif current_count < previous_count:
         st.session_state.shape_meta = st.session_state.shape_meta[:current_count]
 
-    # 🔁 Now loop through shapes and display with correct info
+    # 🔁 Loop through shapes and show details
     for i, obj in enumerate(current_shapes):
         shape = obj.get("type")
         meta = st.session_state.shape_meta[i]
@@ -381,62 +378,60 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
         for detail in object_details:
             st.markdown(detail)
         st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} ft²**")
-        # ✅ Plotly Room Name Preview
-import plotly.graph_objects as go
 
-fig = go.Figure()
-fill_opacity = 0.4
+    # ✅ Plotly Preview with Room Names
+    fig = go.Figure()
+    fill_opacity = 0.4
 
-for i, obj in enumerate(canvas_result.json_data["objects"]):
-    shape = obj.get("type")
-    meta = st.session_state.shape_meta[i]
-    name = meta["name"]
-    zoning_type = meta["zoning"]
-    color = privacy_colors[zoning_type]
+    for i, obj in enumerate(current_shapes):
+        shape = obj.get("type")
+        meta = st.session_state.shape_meta[i]
+        name = meta["name"]
+        zoning_type = meta["zoning"]
+        color = privacy_colors[zoning_type]
 
-    x, y = obj.get("left", 0), obj.get("top", 0)
+        x, y = obj.get("left", 0), obj.get("top", 0)
 
-    if shape == "rect":
-        w = obj.get("width", 0)
-        h = obj.get("height", 0)
-        fig.add_shape(type="rect",
-                      x0=x, y0=y,
-                      x1=x + w, y1=y + h,
-                      line=dict(color=color),
-                      fillcolor=color,
-                      opacity=fill_opacity)
-        fig.add_trace(go.Scatter(x=[x + w / 2], y=[y + h / 2],
-                                 text=[name],
-                                 mode="text",
-                                 textposition="middle center",
-                                 textfont=dict(size=14, color="black")))
+        if shape == "rect":
+            w = obj.get("width", 0)
+            h = obj.get("height", 0)
+            fig.add_shape(type="rect",
+                          x0=x, y0=y,
+                          x1=x + w, y1=y + h,
+                          line=dict(color=color),
+                          fillcolor=color,
+                          opacity=fill_opacity)
+            fig.add_trace(go.Scatter(x=[x + w / 2], y=[y + h / 2],
+                                     text=[name],
+                                     mode="text",
+                                     textposition="middle center",
+                                     textfont=dict(size=14, color="black")))
 
-    elif shape == "circle":
-        r = obj.get("radius", 0)
-        fig.add_shape(type="circle",
-                      x0=x - r, y0=y - r,
-                      x1=x + r, y1=y + r,
-                      line=dict(color=color),
-                      fillcolor=color,
-                      opacity=fill_opacity)
-        fig.add_trace(go.Scatter(x=[x], y=[y],
-                                 text=[name],
-                                 mode="text",
-                                 textposition="middle center",
-                                 textfont=dict(size=14, color="black")))
+        elif shape == "circle":
+            r = obj.get("radius", 0)
+            fig.add_shape(type="circle",
+                          x0=x - r, y0=y - r,
+                          x1=x + r, y1=y + r,
+                          line=dict(color=color),
+                          fillcolor=color,
+                          opacity=fill_opacity)
+            fig.add_trace(go.Scatter(x=[x], y=[y],
+                                     text=[name],
+                                     mode="text",
+                                     textposition="middle center",
+                                     textfont=dict(size=14, color="black")))
 
-fig.update_layout(
-    title="🧾 Room Layout Preview with Labels",
-    showlegend=False,
-    height=500,
-    margin=dict(l=20, r=20, t=30, b=20),
-    xaxis=dict(visible=False),
-    yaxis=dict(visible=False),
-    plot_bgcolor="white"
-)
+    fig.update_layout(
+        title="🧾 Room Layout Preview with Labels",
+        showlegend=False,
+        height=500,
+        margin=dict(l=20, r=20, t=30, b=20),
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        plot_bgcolor="white"
+    )
 
-st.plotly_chart(fig, use_container_width=True)
-
+    st.plotly_chart(fig, use_container_width=True)
 
 else:
     with col1:
