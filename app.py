@@ -301,9 +301,7 @@ canvas_result = st_canvas(
     height=500,
     width=800,
     drawing_mode=drawing_mode,
-    key="sketch-canvas",
-    update_streamlit=True,
-    drawing_mode_label="Mode"
+    key="sketch-canvas"
 )
 
 total_area = 0.0
