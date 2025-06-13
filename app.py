@@ -220,12 +220,16 @@ def estimate_circulation(df, edges):
 std_circ = estimate_circulation(standard_df, standard_adjacencies)
 usr_circ = estimate_circulation(user_df, user_adjacencies)
 
-st.metric("📐 Standard Circulation Estimate", f"{std_circ} ft")
-st.metric("🧑‍🎨 User Circulation Estimate", f"{usr_circ} ft")
-if usr_circ > std_circ:
-    st.warning("⚠️ Consider optimizing layout to reduce circulation distance.")
-else:
-    st.success("✅ Circulation distance is optimized.")
+_, _, col_circ = st.columns([1, 1.5, 1.5])
+with col_circ:
+    st.markdown("#### 📏 Circulation")
+    st.metric("Standard", f"{std_circ} ft")
+    st.metric("User", f"{usr_circ} ft")
+    if usr_circ > std_circ:
+        st.warning("⚠️ Reduce user circulation.")
+    else:
+        st.success("✅ Circulation optimized.")
+
 
 # ---------- Circulation Path Visualization ----------
 st.markdown("### 🗺 Circulation Path Visualization")
