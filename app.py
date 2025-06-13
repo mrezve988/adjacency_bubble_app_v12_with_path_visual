@@ -286,7 +286,6 @@ import math
 
 st.markdown("### 🧊 Sketch Your Plan")
 
-# Use columns to compress the control layout
 col1, col2 = st.columns([1, 3])
 
 with col1:
@@ -297,6 +296,10 @@ with col1:
     zoning = st.selectbox("Zoning", ["Public", "Private", "Service"], index=2)
     room_color = {"Public": "green", "Private": "blue", "Service": "orange"}[zoning]
 
+    st.markdown("#### 📏 Room Details")
+    total_area = 0.0
+    object_details = []
+
 with col2:
     canvas_result = st_canvas(
         fill_color=room_color + "88",
@@ -306,11 +309,9 @@ with col2:
         height=600,
         width=1000,
         drawing_mode=drawing_mode,
-        key="sketch-canvas-compact"
+        key="sketch-canvas-final"
     )
 
-st.markdown("### 📏 Room Details")
-total_area = 0.0
 if canvas_result.json_data and "objects" in canvas_result.json_data:
     for obj in canvas_result.json_data["objects"]:
         shape = obj.get("type")
@@ -318,16 +319,20 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
             width = obj.get("width", 0)
             height = obj.get("height", 0)
             area = width * height / 100
-            st.write(f"🟩 {room_name} ({zoning}) - Rectangle Area: {area:.2f} ft²")
+            object_details.append(f"🟩 {room_name} ({zoning}) - Rect Area: {area:.2f} ft²")
             total_area += area
         elif shape == "circle":
             radius = obj.get("radius", 0)
             area = math.pi * radius ** 2 / 100
-            st.write(f"⚪ {room_name} ({zoning}) - Circle Area: {area:.2f} ft²")
+            object_details.append(f"⚪ {room_name} ({zoning}) - Circle Area: {area:.2f} ft²")
             total_area += area
         elif shape == "path":
-            st.write(f"✏️ {room_name} ({zoning}) - Freehand (area not estimated)")
+            object_details.append(f"✏️ {room_name} ({zoning}) - Freehand (area not calculated)")
 
-    st.markdown(f"### 📐 Total Plan Area (Rect + Circle only): **{total_area:.2f} ft²**")
+    with col1:
+        for detail in object_details:
+            st.markdown(detail)
+        st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} ft²**")
 else:
-    st.info("Draw shapes to see calculated area.")
+    with col1:
+        st.info("Draw shapes to display room details.")
