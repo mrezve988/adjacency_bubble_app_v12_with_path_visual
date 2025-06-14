@@ -414,14 +414,22 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
                                      textfont=dict(size=14, color="black")))
 
     fig.update_layout(
-        title="🧾 Sketch with Room Labels + Area",
-        showlegend=False,
-        height=500,
-        xaxis=dict(visible=False),
-        yaxis=dict(visible=False, autorange='reversed'),
-        margin=dict(l=10, r=10, t=30, b=10),
-        plot_bgcolor="white"
-    )
+    title="🧾 Sketch with Room Labels + Area",
+    showlegend=False,
+    height=600,
+    width=1000,
+    xaxis=dict(
+        visible=False,
+        scaleanchor="y",  # 🔐 lock aspect ratio
+        scaleratio=1
+    ),
+    yaxis=dict(
+        visible=False,
+        autorange='reversed'
+    ),
+    margin=dict(l=10, r=10, t=30, b=10),
+    plot_bgcolor="white"
+)
 
     # Convert Plotly figure to PNG
     img_bytes = fig.to_image(format="png", engine="kaleido")
