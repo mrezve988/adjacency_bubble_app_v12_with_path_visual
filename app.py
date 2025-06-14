@@ -376,7 +376,7 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
             st.markdown(detail)
         st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} ft²**")
 
-    # ---------- Plotly Preview with Download ----------
+        # ---------- Plotly Preview with Download (Room Name + Area) ----------
     fig = go.Figure()
     fill_opacity = 0.4
 
@@ -391,31 +391,35 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
         if shape == "rect":
             w = obj.get("width", 0)
             h = obj.get("height", 0)
+            area = w * h / 100
+            label = f"{name}<br>{area:.2f} ft²"
             fig.add_shape(type="rect",
                           x0=x, y0=y, x1=x + w, y1=y + h,
                           line=dict(color=color), fillcolor=color, opacity=fill_opacity)
             fig.add_trace(go.Scatter(x=[x + w / 2], y=[y + h / 2],
-                                     text=[name], mode="text",
+                                     text=[label], mode="text",
                                      textposition="middle center",
                                      textfont=dict(size=14, color="black")))
         elif shape == "circle":
             r = obj.get("radius", 0)
+            area = math.pi * r**2 / 100
+            label = f"{name}<br>{area:.2f} ft²"
             fig.add_shape(type="circle",
                           x0=x - r, y0=y - r, x1=x + r, y1=y + r,
                           line=dict(color=color), fillcolor=color, opacity=fill_opacity)
             fig.add_trace(go.Scatter(x=[x], y=[y],
-                                     text=[name], mode="text",
+                                     text=[label], mode="text",
                                      textposition="middle center",
                                      textfont=dict(size=14, color="black")))
 
     fig.update_layout(
-    title="🧾 Sketch with Room Labels",
-    showlegend=False,
-    height=500,
-    xaxis=dict(visible=False),
-    yaxis=dict(visible=False, autorange='reversed'),  # ✅ Flip vertically
-    margin=dict(l=10, r=10, t=30, b=10),
-    plot_bgcolor="white"
+        title="🧾 Sketch with Room Labels + Area",
+        showlegend=False,
+        height=500,
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False, autorange='reversed'),  # ✅ Correct mirror issue
+        margin=dict(l=10, r=10, t=30, b=10),
+        plot_bgcolor="white"
     )
 
     # Convert Plotly figure to PNG
@@ -430,7 +434,3 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
         file_name="room_sketch.png",
         mime="image/png"
     )
-
-else:
-    with col1:
-        st.info("Draw shapes to display room details.")
