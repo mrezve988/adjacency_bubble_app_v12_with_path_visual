@@ -337,6 +337,25 @@ with col2:
 # ---------- Shape Metadata + Display ----------
 if canvas_result.json_data and "objects" in canvas_result.json_data:
     current_shapes = canvas_result.json_data["objects"]
+    # If a new shape is added, show its area separately for quick feedback
+if current_count > 0:
+    last_shape = current_shapes[-1]
+    shape_type = last_shape.get("type")
+    x = last_shape.get("left", 0)
+    y = last_shape.get("top", 0)
+    live_area = None
+
+    if shape_type == "rect":
+        w = last_shape.get("width", 0)
+        h = last_shape.get("height", 0)
+        live_area = w * h / 100
+    elif shape_type == "circle":
+        r = last_shape.get("radius", 0)
+        live_area = math.pi * r**2 / 100
+
+    if live_area:
+        st.markdown(f"#### 🔍 Live Shape Area: **{live_area:.2f} sqft**")
+        current_shapes = canvas_result.json_data["objects"]
 
     if "shape_meta" not in st.session_state:
         st.session_state.shape_meta = []
