@@ -409,13 +409,13 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
                                      textfont=dict(size=14, color="black")))
 
     fig.update_layout(
-        title="🧾 Sketch with Room Labels",
-        showlegend=False,
-        height=500,
-        xaxis=dict(visible=False),
-        yaxis=dict(visible=False),
-        margin=dict(l=10, r=10, t=30, b=10),
-        plot_bgcolor="white"
+    title="🧾 Sketch with Room Labels",
+    showlegend=False,
+    height=500,
+    xaxis=dict(visible=False),
+    yaxis=dict(visible=False, autorange='reversed'),  # ✅ Flip vertically
+    margin=dict(l=10, r=10, t=30, b=10),
+    plot_bgcolor="white"
     )
 
     # Convert Plotly figure to PNG
