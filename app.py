@@ -419,13 +419,27 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
     height=600,
     width=1000,
     xaxis=dict(
-        visible=False,
-        scaleanchor="y",  # 🔐 lock aspect ratio
-        scaleratio=1
+        title="Width (pixels ≈ ft)",
+        showgrid=True,
+        gridcolor='lightgray',
+        tick0=0,
+        dtick=100,  # every 100 pixels
+        scaleanchor="y",
+        scaleratio=1,
+        showline=True,
+        mirror=True,
+        ticks='outside'
     ),
     yaxis=dict(
-        visible=False,
-        autorange='reversed'
+        title="Height (pixels ≈ ft)",
+        showgrid=True,
+        gridcolor='lightgray',
+        tick0=0,
+        dtick=100,
+        autorange='reversed',
+        showline=True,
+        mirror=True,
+        ticks='outside'
     ),
     margin=dict(l=10, r=10, t=30, b=10),
     plot_bgcolor="white"
