@@ -394,14 +394,10 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
             fig.add_shape(type="rect",
                           x0=x, y0=y, x1=x + w, y1=y + h,
                           line=dict(color=color), fillcolor=color, opacity=fill_opacity)
-            label = f"{name}<br>{area:.2f} ft²"
-fig.add_trace(go.Scatter(
-    x=[x], y=[y],
-    text=[label],
-    mode="text",
-    textposition="middle center",
-    textfont=dict(size=14, color="black")
-))
+            fig.add_trace(go.Scatter(x=[x + w / 2], y=[y + h / 2],
+                                     text=[name], mode="text",
+                                     textposition="middle center",
+                                     textfont=dict(size=14, color="black")))
         elif shape == "circle":
             r = obj.get("radius", 0)
             fig.add_shape(type="circle",
