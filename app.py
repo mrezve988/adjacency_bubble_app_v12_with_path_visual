@@ -332,19 +332,17 @@ with col2:
         width=1000,
         drawing_mode=drawing_mode,
         key="sketch-canvas-final"
-    )  # ✅ correctly closed here
+    )
 
 with col3:
     st.markdown("#### 🧠 Reference Bubble Diagram")
     draw_interactive(user_df, user_adjacencies)
-
 
 # ---------- Shape Metadata + Display ----------
 if canvas_result.json_data and "objects" in canvas_result.json_data:
     current_shapes = canvas_result.json_data["objects"]
     current_count = len(current_shapes)
 
-    # ✅ Initialize or sync shape metadata
     if "shape_meta" not in st.session_state:
         st.session_state.shape_meta = []
 
@@ -390,7 +388,8 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
         shape = obj.get("type")
         meta = st.session_state.shape_meta[i]
         name = meta["name"]
-        color = privacy_colors[zoning_type]
+        zoning_type = meta["zoning"]
+        color = privacy_colors[zoning_type]  # ✅ moved inside the loop
         x, y = obj.get("left", 0), obj.get("top", 0)
 
         if shape == "rect":
@@ -400,42 +399,40 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
             label = f"{name}<br>{area:.2f} sqft"
             fig.add_shape(type="rect",
                           x0=x, y0=y, x1=x + w, y1=y + h,
-                          line=dict(color=color), fillcolor=color, opacity=fill_opacity)
+                          line=dict(color=color),
+                          fillcolor=color + "66",  # ✅ semi-transparent fill
+                          opacity=1)
             fig.add_trace(go.Scatter(x=[x + w / 2], y=[y + h / 2],
                                      text=[label], mode="text",
                                      textposition="middle center",
                                      textfont=dict(size=14, color="black")))
+
         elif shape == "circle":
             r = obj.get("radius", 0)
             area = math.pi * r**2 / 100
             label = f"{name}<br>{area:.2f} sqft"
             fig.add_shape(type="circle",
                           x0=x - r, y0=y - r, x1=x + r, y1=y + r,
-                          line=dict(color=color), fillcolor=color, opacity=fill_opacity)
+                          line=dict(color=color),
+                          fillcolor=color + "66",
+                          opacity=1)
             fig.add_trace(go.Scatter(x=[x], y=[y],
                                      text=[label], mode="text",
                                      textposition="middle center",
                                      textfont=dict(size=14, color="black")))
 
     fig.update_layout(
-    title="🧾 Sketch with Room Labels + Area",
-    showlegend=False,
-    height=600,
-    width=1000,
-    xaxis=dict(
-        visible=False,
-        scaleanchor="y",  # 🔐 lock aspect ratio
-        scaleratio=1
-    ),
-    yaxis=dict(
-        visible=False,
-        autorange='reversed'
-    ),
-    margin=dict(l=10, r=10, t=30, b=10),
-    plot_bgcolor="white"
-)
+        title="🧾 Sketch with Room Labels + Area",
+        showlegend=False,
+        height=600,
+        width=1000,
+        xaxis=dict(visible=False, scaleanchor="y", scaleratio=1),
+        yaxis=dict(visible=False, autorange='reversed'),
+        margin=dict(l=10, r=10, t=30, b=10),
+        plot_bgcolor="white"
+    )
 
-    # Convert Plotly figure to PNG
+    # Export PNG
     img_bytes = fig.to_image(format="png", engine="kaleido")
     buffer = io.BytesIO(img_bytes)
 
