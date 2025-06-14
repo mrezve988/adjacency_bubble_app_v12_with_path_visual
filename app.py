@@ -339,23 +339,6 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
     current_shapes = canvas_result.json_data["objects"]
     current_count = len(current_shapes)
 
-    # 🔍 Show live feedback for the most recent shape
-    if current_count > 0:
-        last_shape = current_shapes[-1]
-        shape_type = last_shape.get("type")
-        live_area = None
-
-        if shape_type == "rect":
-            w = last_shape.get("width", 0)
-            h = last_shape.get("height", 0)
-            live_area = w * h / 100
-        elif shape_type == "circle":
-            r = last_shape.get("radius", 0)
-            live_area = math.pi * r**2 / 100
-
-        if live_area:
-            st.markdown(f"#### 🔍 Live Shape Area: **{live_area:.2f} sqft**")
-
     # ✅ Initialize or sync shape metadata
     if "shape_meta" not in st.session_state:
         st.session_state.shape_meta = []
