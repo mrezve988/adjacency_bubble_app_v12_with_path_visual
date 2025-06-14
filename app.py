@@ -337,30 +337,29 @@ with col2:
 # ---------- Shape Metadata + Display ----------
 if canvas_result.json_data and "objects" in canvas_result.json_data:
     current_shapes = canvas_result.json_data["objects"]
-    # If a new shape is added, show its area separately for quick feedback
-if current_count > 0:
-    last_shape = current_shapes[-1]
-    shape_type = last_shape.get("type")
-    x = last_shape.get("left", 0)
-    y = last_shape.get("top", 0)
-    live_area = None
+    current_count = len(current_shapes)
 
-    if shape_type == "rect":
-        w = last_shape.get("width", 0)
-        h = last_shape.get("height", 0)
-        live_area = w * h / 100
-    elif shape_type == "circle":
-        r = last_shape.get("radius", 0)
-        live_area = math.pi * r**2 / 100
+    # 🔍 Show live feedback for the most recent shape
+    if current_count > 0:
+        last_shape = current_shapes[-1]
+        shape_type = last_shape.get("type")
+        live_area = None
 
-    if live_area:
-        st.markdown(f"#### 🔍 Live Shape Area: **{live_area:.2f} sqft**")
-        current_shapes = canvas_result.json_data["objects"]
+        if shape_type == "rect":
+            w = last_shape.get("width", 0)
+            h = last_shape.get("height", 0)
+            live_area = w * h / 100
+        elif shape_type == "circle":
+            r = last_shape.get("radius", 0)
+            live_area = math.pi * r**2 / 100
 
+        if live_area:
+            st.markdown(f"#### 🔍 Live Shape Area: **{live_area:.2f} sqft**")
+
+    # ✅ Initialize or sync shape metadata
     if "shape_meta" not in st.session_state:
         st.session_state.shape_meta = []
 
-    current_count = len(current_shapes)
     if current_count > len(st.session_state.shape_meta):
         st.session_state.shape_meta.append({
             "name": room_name,
@@ -395,7 +394,7 @@ if current_count > 0:
             st.markdown(detail)
         st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} sqft**")
 
-        # ---------- Plotly Preview with Download (Room Name + Area) ----------
+    # ---------- Plotly Preview with Download (Room Name + Area) ----------
     fig = go.Figure()
     fill_opacity = 0.4
 
@@ -436,7 +435,7 @@ if current_count > 0:
         showlegend=False,
         height=500,
         xaxis=dict(visible=False),
-        yaxis=dict(visible=False, autorange='reversed'),  # ✅ Correct mirror issue
+        yaxis=dict(visible=False, autorange='reversed'),
         margin=dict(l=10, r=10, t=30, b=10),
         plot_bgcolor="white"
     )
@@ -453,3 +452,7 @@ if current_count > 0:
         file_name="room_sketch.png",
         mime="image/png"
     )
+
+else:
+    with col1:
+        st.info("Draw shapes to display room details.")
