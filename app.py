@@ -355,7 +355,7 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
         meta = st.session_state.shape_meta[i]
         name = meta["name"]
         zoning_type = meta["zoning"]
-        color_icon = {"Public": "🟩", "Private": "🔵", "Service": "🟧"}.get(zoning_type, "⬜")
+        color_icon = {"Public": "🟩", "Private": "🟦", "Service": "🟧"}.get(zoning_type, "⬜")
 
         if shape == "rect":
             width = obj.get("width", 0)
