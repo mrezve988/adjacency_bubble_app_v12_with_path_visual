@@ -389,15 +389,7 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
     for i, obj in enumerate(current_shapes):
         shape = obj.get("type")
         meta = st.session_state.shape_meta[i]
-        name_key = f"room_name_{i}"
-if name_key not in st.session_state:
-    st.session_state[name_key] = meta["name"]
-
-# Editable name field
-new_name = st.text_input(f"✏️ Rename Room {i+1}", value=st.session_state[name_key], key=name_key)
-st.session_state.shape_meta[i]["name"] = new_name
-name = new_name
-        zoning_type = meta["zoning"]
+        name = meta["name"]
         color = privacy_colors[zoning_type]
         x, y = obj.get("left", 0), obj.get("top", 0)
 
