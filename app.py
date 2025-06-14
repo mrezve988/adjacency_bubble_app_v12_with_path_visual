@@ -323,10 +323,7 @@ with col1:
     object_details = []
 
 with col2:
-        st.markdown("##### 📏 Reference Scale (0–10 ft)")
-    st.image("scale_10ft.png", caption="Scale: 1 ft = 12 px (approx)", use_column_width=False)
-
-    canvas_result = st_canvas(
+         canvas_result = st_canvas(
         fill_color=room_color + "66",
         stroke_width=stroke_width,
         stroke_color=room_color,
