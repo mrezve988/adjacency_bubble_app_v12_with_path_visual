@@ -361,12 +361,12 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
             width = obj.get("width", 0)
             height = obj.get("height", 0)
             area = width * height / 100
-            object_details.append(f"{color_icon} {name} ({zoning_type}) - Rect Area: {area:.2f} ft²")
+            object_details.append(f"{color_icon} {name} ({zoning_type}) - Rect Area: {area:.2f} sqft")
             total_area += area
         elif shape == "circle":
             radius = obj.get("radius", 0)
             area = math.pi * radius**2 / 100
-            object_details.append(f"{color_icon} {name} ({zoning_type}) - Circle Area: {area:.2f} ft²")
+            object_details.append(f"{color_icon} {name} ({zoning_type}) - Circle Area: {area:.2f} sqft")
             total_area += area
         elif shape == "path":
             object_details.append(f"{color_icon} {name} ({zoning_type}) - Freehand (area not calculated)")
@@ -374,7 +374,7 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
     with col1:
         for detail in object_details:
             st.markdown(detail)
-        st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} ft²**")
+        st.markdown(f"#### 📐 Total Plan Area: **{total_area:.2f} sqft**")
 
         # ---------- Plotly Preview with Download (Room Name + Area) ----------
     fig = go.Figure()
@@ -392,7 +392,7 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
             w = obj.get("width", 0)
             h = obj.get("height", 0)
             area = w * h / 100
-            label = f"{name}<br>{area:.2f} ft²"
+            label = f"{name}<br>{area:.2f} sqft"
             fig.add_shape(type="rect",
                           x0=x, y0=y, x1=x + w, y1=y + h,
                           line=dict(color=color), fillcolor=color, opacity=fill_opacity)
@@ -403,7 +403,7 @@ if canvas_result.json_data and "objects" in canvas_result.json_data:
         elif shape == "circle":
             r = obj.get("radius", 0)
             area = math.pi * r**2 / 100
-            label = f"{name}<br>{area:.2f} ft²"
+            label = f"{name}<br>{area:.2f} sqft"
             fig.add_shape(type="circle",
                           x0=x - r, y0=y - r, x1=x + r, y1=y + r,
                           line=dict(color=color), fillcolor=color, opacity=fill_opacity)
